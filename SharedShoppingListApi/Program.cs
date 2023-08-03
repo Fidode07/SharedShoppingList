@@ -37,6 +37,10 @@ namespace SharedShoppingList
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+                using (var context = app.Services.GetRequiredService<MainDbContext>())
+                {
+                    context.Database.Migrate();
+                }
             }
 
             if (app.Environment.IsProduction())
