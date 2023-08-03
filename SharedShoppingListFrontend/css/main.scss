@@ -48,6 +48,10 @@ body {
       display: none;
       transition: all .3s ease-in-out;
 
+      &.active {
+        display: block;
+      }
+
       /* Group Container Stuff */
       .group-heading {
         padding: 10px 10px 20px 10px;
