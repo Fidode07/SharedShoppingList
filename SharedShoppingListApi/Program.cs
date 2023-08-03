@@ -39,6 +39,14 @@ namespace SharedShoppingList
                 app.UseSwaggerUI();
             }
 
+            if (app.Environment.IsProduction())
+            {
+                using (var context = app.Services.GetRequiredService<MainDbContext>())
+                {
+                    context.Database.Migrate();
+                }
+            }
+
             app.UseCors("AllowAll");
 
             app.UseHttpsRedirection();
