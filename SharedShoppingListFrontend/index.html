@@ -24,11 +24,11 @@
                         <div class="form">
                             <div class="form-input-field">
                                 <label for="username">Username:</label>
-                                <input type="text" id="username" name="username" placeholder="Benutzername">
+                                <input type="text" id="username" name="username" placeholder="Username">
                             </div>
                             <div class="form-input-field">
                                 <label for="password">Password:</label>
-                                <input type="password" id="password" name="password" placeholder="Passwort">
+                                <input type="password" id="password" name="password" placeholder="Password">
                             </div>
                             <p>Dont have an Account yet? <a href="#" onclick="changeContainer('register');">Register</a>!
                             </p>
@@ -50,20 +50,20 @@
                         <div class="form">
                             <div class="form-input-field">
                                 <label for="username2">Username:</label>
-                                <input type="text" id="username2" name="username" placeholder="Benutzername">
+                                <input type="text" id="username2" name="username" placeholder="Username">
                             </div>
                             <div class="form-input-field">
                                 <label for="password2">Password:</label>
-                                <input type="password" id="password2" name="password" placeholder="Passwort">
+                                <input type="password" id="password2" name="password" placeholder="Password">
                             </div>
                             <div class="form-input-field">
                                 <label for="rp-password2">Repeat password:</label>
-                                <input type="password" id="rp-password2" name="password" placeholder="Passwort">
+                                <input type="password" id="rp-password2" name="password" placeholder="Repeat your password">
                             </div>
                             <p>Already have an Account? <a href="#" onclick="changeContainer('login')">Login</a>!</p>
 
                             <div class="form-input-field">
-                                <input type="submit" value="Register" class="login-btn">
+                                <input type="submit" value="Register" onclick="tryRegister()" class="login-btn">
                             </div>
                         </div>
                     </div>
@@ -76,7 +76,7 @@
             <div class="row">
                 <h1 class="group-heading">Your Groups:</h1>
                 <div class="col-lg-12 group-card-container">
-                    <div class="group-card">
+                    <div class="group-card" onclick="groupClick(2);">
                         <h1 class="title">Toms Familie (3)</h1>
                     </div>
                 </div>
