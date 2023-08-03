@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SharedShoppingListApi.Data;
 using SharedShoppingListApi.Dtos;
+using System.Text.RegularExpressions;
 
 namespace SharedShoppingListApi.Controllers
 {
@@ -45,6 +46,30 @@ namespace SharedShoppingListApi.Controllers
             serviceResponse.Success = true;
             serviceResponse.Message = "OK";
             serviceResponse.Data = groupsDto;
+
+            return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
+        }
+        [HttpPost("create_group")]
+        public async Task<ActionResult<ServiceResponse<int>>> CreateGroup(CreateGroupDto createGroupDto)
+        {
+            var serviceResponse = new ServiceResponse<int>();
+
+            if (string.IsNullOrEmpty(createGroupDto.Name) || string.IsNullOrEmpty(createGroupDto.Description))
+            {
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = "Group props are empty";
+                return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
+            }
+
+            Models.Group newGroup = new Models.Group();
+
+            _mainDbContext.Groups.Add(newGroup);
+            await _mainDbContext.SaveChangesAsync();
+
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Success = true;
+            serviceResponse.Message = "Successfully created a group";
+            serviceResponse.Data = newGroup.Id;
 
             return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
         }
