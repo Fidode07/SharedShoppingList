@@ -11,7 +11,7 @@ namespace SharedShoppingList
 
             // Add services to the container.
             builder.Services.AddDbContext<MainDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("MainDbContext")));
+                options.UseSqlite("Data Source=MainSharedShoppingList.db"));
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
