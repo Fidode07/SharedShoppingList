@@ -1,0 +1,7 @@
+﻿################################################################################
+# Diese .gitignore-Datei wurde von Microsoft(R) Visual Studio automatisch erstellt.
+################################################################################
+
+/SharedShoppingListApi/MainSharedShoppingList.db
+/SharedShoppingListApi/MainSharedShoppingList.db-shm
+/SharedShoppingListApi/MainSharedShoppingList.db-wal
