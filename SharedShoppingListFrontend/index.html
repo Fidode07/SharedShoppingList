@@ -15,7 +15,7 @@
     <h1 class="title"><span>S</span><span>S</span><span>L</span> - That's shopping!</h1>
 </header>
 <main>
-    <section class="content-container" id="login-container">
+    <section class="content-container active" id="login-container">
         <div class="container">
             <div class="row">
                 <div class="col-xl-12 login-container">
@@ -30,9 +30,10 @@
                                 <label for="password">Password:</label>
                                 <input type="password" id="password" name="password" placeholder="Passwort">
                             </div>
-                            <p>Dont have an Account yet? <a href="#">Register</a>!</p>
+                            <p>Dont have an Account yet? <a href="#" onclick="changeContainer('register');">Register</a>!
+                            </p>
                             <div class="form-input-field">
-                                <input type="submit" value="Login" class="login-btn">
+                                <input type="submit" value="Login" onclick="tryLogin();" class="login-btn">
                             </div>
                         </div>
                     </div>
@@ -59,7 +60,7 @@
                                 <label for="rp-password2">Repeat password:</label>
                                 <input type="password" id="rp-password2" name="password" placeholder="Passwort">
                             </div>
-                            <p>Already have an Account? <a href="#">Login</a>!</p>
+                            <p>Already have an Account? <a href="#" onclick="changeContainer('login')">Login</a>!</p>
 
                             <div class="form-input-field">
                                 <input type="submit" value="Register" class="login-btn">
@@ -87,7 +88,7 @@
             </div>
         </div>
     </section>
-    <section class="content-container" id="shopping-list-editor-container" style="display: block;">
+    <section class="content-container" id="shopping-list-editor-container">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-xl-12">
@@ -147,5 +148,7 @@
 <br><br>
 <!-- Bootstrap JS -->
 <script src="js/bootstrap/bootstrap.min.js" async></script>
+<script src="js/content-container-handler.js" async></script>
+<script src="js/server-communication.js" async></script>
 </body>
 </html>

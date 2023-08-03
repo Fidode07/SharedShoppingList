@@ -1,9 +1,26 @@
-function handleContainer() {
-    let containers = document.getElementsByClassName('content-container');
+let activeContainer, containers;
+
+function getActiveContainer(containers) {
+    return Array.from(containers).find(container => container.classList.contains('active'));
 }
 
-if(document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', handleContainer);
+function changeContainer(targetContainer) {
+    const newContainer = document.getElementById(targetContainer + '-container');
+    if (!newContainer) {
+        return;
+    }
+    activeContainer.classList.remove('active');
+    activeContainer = newContainer;
+    activeContainer.classList.add('active');
+}
+
+function initContainerData() {
+    containers = document.getElementsByClassName('content-container');
+    activeContainer = getActiveContainer(containers);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initContainerData);
 } else {
-    handleContainer();
+    initContainerData();
 }
