@@ -60,7 +60,7 @@ namespace SharedShoppingListApi.Controllers
             {
                 Username = registerDto.Username,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password)
-        };
+            };
 
             _mainDbContext.Users.Add(newUser);
             await _mainDbContext.SaveChangesAsync();
