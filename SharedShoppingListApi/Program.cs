@@ -22,12 +22,11 @@ namespace SharedShoppingList
 
             builder.Services.AddCors(options =>
             {
-                options.AddDefaultPolicy(builder =>
+                options.AddPolicy("AllowAll", builder =>
                 {
-                    builder.WithOrigins(origins)
-                           .AllowAnyHeader()
+                    builder.AllowAnyOrigin()
                            .AllowAnyMethod()
-                           .AllowCredentials();
+                           .AllowAnyHeader();
                 });
             });
 
@@ -40,7 +39,7 @@ namespace SharedShoppingList
                 app.UseSwaggerUI();
             }
 
-            app.UseCors();
+            app.UseCors("AllowAll");
 
             app.UseHttpsRedirection();
 
