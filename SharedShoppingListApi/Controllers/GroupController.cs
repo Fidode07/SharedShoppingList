@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SharedShoppingListApi.Data;
 using SharedShoppingListApi.Dtos;
 using System.Text.RegularExpressions;
@@ -70,6 +71,40 @@ namespace SharedShoppingListApi.Controllers
             serviceResponse.Success = true;
             serviceResponse.Message = "Successfully created a group";
             serviceResponse.Data = newGroup.Id;
+
+            return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
+        }
+
+        [HttpPost("join_group")]
+        public async Task<ActionResult<ServiceResponse>> JoinGroup(JoinGroupDto joinGroupDto)
+        {
+            var serviceResponse = new ServiceResponse();
+
+            var groupFromDb = await _mainDbContext.Groups.Where(x => x.Id == joinGroupDto.GroupId).FirstOrDefaultAsync();
+
+            if (groupFromDb == null)
+            {
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = "Group not found";
+                return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
+            }
+
+            var user = await _mainDbContext.Users.Where(x => x.Id == joinGroupDto.UserId).FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = "User not found";
+                return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
+            }
+
+            groupFromDb.Members.Add(user);
+            _mainDbContext.Groups.Update(groupFromDb);
+            await _mainDbContext.SaveChangesAsync();
+
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Success = true;
+            serviceResponse.Message = $"Successfully joined the group: {groupFromDb.Name}";
 
             return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
         }
