@@ -2,6 +2,6 @@
 {
     public class GetGroupsDto
     {
-        public int UserId { get; set; }
+        public string UniqueUserId { get; set; } = null!;
     }
 }

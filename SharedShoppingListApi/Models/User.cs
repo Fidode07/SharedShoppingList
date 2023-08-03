@@ -8,5 +8,6 @@ namespace SharedShoppingListApi.Models
         public int Id { get; set; }
         public string Username { get; set; } = null!;
         public string PasswordHash { get; set; } = null!;
+        public string UniqueId { get; set; } = null!;
     }
 }

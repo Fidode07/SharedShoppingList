@@ -17,9 +17,9 @@ namespace SharedShoppingListApi.Controllers
             _mainDbContext = mainDbContext;
         }
         [HttpPost("login")]
-        public async Task<ActionResult<ServiceResponse<int>>> Login(LoginDto loginDto)
+        public async Task<ActionResult<ServiceResponse<string>>> Login(LoginDto loginDto)
         {
-            var serviceResponse = new ServiceResponse<int>();
+            var serviceResponse = new ServiceResponse<string>();
             var user = await _mainDbContext.Users.FirstOrDefaultAsync(u => u.Username.ToLower() == loginDto.Username.ToLower());
 
             if(user == null)
@@ -36,7 +36,7 @@ namespace SharedShoppingListApi.Controllers
                 return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
             }
 
-            serviceResponse.Data = user.Id;
+            serviceResponse.Data = user.UniqueId;
             serviceResponse.StatusCode = 200;
             serviceResponse.Success = true;
             serviceResponse.Message = "Successfully logged in";
@@ -45,9 +45,9 @@ namespace SharedShoppingListApi.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<ServiceResponse<int>>> Register(RegisterDto registerDto)
+        public async Task<ActionResult<ServiceResponse<string>>> Register(RegisterDto registerDto)
         {
-            var serviceResponse = new ServiceResponse<int>();
+            var serviceResponse = new ServiceResponse<string>();
 
             if(await _mainDbContext.Users.AnyAsync(u => u.Username.ToLower() == registerDto.Username.ToLower()))
             {
@@ -59,13 +59,14 @@ namespace SharedShoppingListApi.Controllers
             var newUser = new User
             {
                 Username = registerDto.Username,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password)
-            };
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password),
+                UniqueId = Guid.NewGuid().ToString("N").Substring(0, 20)
+        };
 
             _mainDbContext.Users.Add(newUser);
             await _mainDbContext.SaveChangesAsync();
 
-            serviceResponse.Data = newUser.Id;
+            serviceResponse.Data = newUser.UniqueId;
             serviceResponse.StatusCode = 200;
             serviceResponse.Success = true;
             serviceResponse.Message = "Successfully registered";

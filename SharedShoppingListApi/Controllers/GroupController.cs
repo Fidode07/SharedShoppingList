@@ -22,7 +22,7 @@ namespace SharedShoppingListApi.Controllers
         {
             var serviceResponse = new ServiceResponse<List<GroupsDto>>();
 
-            if(getGroupsDto.UserId == 0)
+            if(string.IsNullOrEmpty(getGroupsDto.UniqueUserId))
             {
                 serviceResponse.StatusCode = 400;
                 serviceResponse.Message = "User Id is required";
@@ -31,7 +31,7 @@ namespace SharedShoppingListApi.Controllers
             
             List<GroupsDto> groupsDto = new List<GroupsDto>();
 
-            var groupsFromUser = _mainDbContext.Groups.Where(group => group.Members.Any(member => member.Id == getGroupsDto.UserId));
+            var groupsFromUser = _mainDbContext.Groups.Where(group => group.Members.Any(member => member.UniqueId == getGroupsDto.UniqueUserId));
 
             foreach (var group in groupsFromUser)
             {
@@ -89,7 +89,7 @@ namespace SharedShoppingListApi.Controllers
                 return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
             }
 
-            var user = await _mainDbContext.Users.Where(x => x.Id == joinGroupDto.UserId).FirstOrDefaultAsync();
+            var user = await _mainDbContext.Users.Where(x => x.UniqueId == joinGroupDto.UniqueUserId).FirstOrDefaultAsync();
 
             if (user == null)
             {
