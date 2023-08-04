@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SharedShoppingListApi.Models.Submodels;
+using System.ComponentModel.DataAnnotations;
 
 namespace SharedShoppingListApi.Models
 {
@@ -9,5 +10,6 @@ namespace SharedShoppingListApi.Models
         public string Username { get; set; } = string.Empty;
         public string PasswordHash { get; set; } = string.Empty;
         public string UniqueId { get; set; } = string.Empty;
+        public List<UserGroup> Groups { get; set; } = new List<UserGroup>();
     }
 }
