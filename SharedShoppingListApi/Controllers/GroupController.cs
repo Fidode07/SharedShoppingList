@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SharedShoppingListApi.Data;
 using SharedShoppingListApi.Dtos;
+using SharedShoppingListApi.Models;
 using System.Text.RegularExpressions;
 
 namespace SharedShoppingListApi.Controllers
@@ -105,6 +106,44 @@ namespace SharedShoppingListApi.Controllers
             serviceResponse.StatusCode = 200;
             serviceResponse.Success = true;
             serviceResponse.Message = $"Successfully joined the group: {groupFromDb.Name}";
+
+            return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
+        }
+
+        [HttpGet("get_group")]
+        public async Task<ActionResult<ServiceResponse<Models.Group>>> GetGroup(int groupId, string uniqueUserId)
+        {
+            var serviceResponse = new ServiceResponse<Models.Group>();
+
+            var groupFromDb = await _mainDbContext.Groups.Where(x => x.Id == groupId).FirstOrDefaultAsync();
+
+            if (groupFromDb == null)
+            {
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = "Group not found";
+                return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
+            }
+
+            var user = await _mainDbContext.Users.Where(x => x.UniqueId == uniqueUserId).FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = "User not found";
+                return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
+            }
+
+            if(!groupFromDb.Members.Any(x => x.UniqueId == uniqueUserId))
+            {
+                serviceResponse.StatusCode = 401;
+                serviceResponse.Message = "You are not in this group";
+                return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
+            }
+
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Success = true;
+            serviceResponse.Message = $"Success";
+            serviceResponse.Data = groupFromDb;
 
             return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
         }
