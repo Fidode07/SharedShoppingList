@@ -152,11 +152,11 @@ namespace SharedShoppingListApi.Controllers
         }
 
         [HttpPost("leave_group")]
-        public async Task<ActionResult<ServiceResponse>> LeaveGroup(JoinGroupDto joinGroupDto)
+        public async Task<ActionResult<ServiceResponse>> LeaveGroup(LeaveGroupDto leaveGroupDto)
         {
             var serviceResponse = new ServiceResponse();
 
-            var groupFromDb = await _mainDbContext.Groups.Where(x => x.Id == joinGroupDto.GroupId).FirstOrDefaultAsync();
+            var groupFromDb = await _mainDbContext.Groups.Where(x => x.Id == leaveGroupDto.GroupId).FirstOrDefaultAsync();
 
             if (groupFromDb == null)
             {
@@ -165,7 +165,7 @@ namespace SharedShoppingListApi.Controllers
                 return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
             }
 
-            var user = await _mainDbContext.Users.Where(x => x.UniqueId == joinGroupDto.UniqueUserId).FirstOrDefaultAsync();
+            var user = await _mainDbContext.Users.Where(x => x.UniqueId == leaveGroupDto.UniqueUserId).FirstOrDefaultAsync();
 
             if (user == null)
             {
@@ -174,13 +174,13 @@ namespace SharedShoppingListApi.Controllers
                 return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
             }
 
-            groupFromDb.Members.Add(user);
+            groupFromDb.Members.Remove(user);
             _mainDbContext.Groups.Update(groupFromDb);
             await _mainDbContext.SaveChangesAsync();
 
             serviceResponse.StatusCode = 200;
             serviceResponse.Success = true;
-            serviceResponse.Message = $"Successfully joined the group: {groupFromDb.Name}";
+            serviceResponse.Message = $"Successfully leaved the group: {groupFromDb.Name}";
 
             return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
         }
