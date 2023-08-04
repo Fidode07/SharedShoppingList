@@ -63,10 +63,20 @@ namespace SharedShoppingListApi.Controllers
                 return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
             }
 
+            var user = await _mainDbContext.Users.Where(x => x.UniqueId == createGroupDto.UniqueUserId).FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = "User not found";
+                return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
+            }
+
             Models.Group newGroup = new Models.Group();
 
             newGroup.Name = createGroupDto.Name;
             newGroup.Description = createGroupDto.Description;
+            newGroup.Members = new List<User>() { user };
 
             _mainDbContext.Groups.Add(newGroup);
             await _mainDbContext.SaveChangesAsync();
