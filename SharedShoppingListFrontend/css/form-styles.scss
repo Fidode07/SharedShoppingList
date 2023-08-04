@@ -1,0 +1,43 @@
+@import "vars";
+
+.form {
+  .login-btn {
+    margin-top: 10px;
+    padding: 5px 10px;
+    border-radius: var(--corners);
+    float: left;
+    border: 1px solid var(--secondary-color);
+    background: var(--secondary-color);
+    color: white;
+    font-size: 1.2em;
+    transition: all .3s ease-in-out;
+
+    &:hover {
+      cursor: pointer;
+      background: white;
+      color: var(--secondary-color);
+    }
+  }
+
+  .form-input-field {
+    margin: 10px 0;
+    text-align: left;
+
+    label {
+      font-size: 1.2em;
+      margin-bottom: 5px;
+    }
+
+    input {
+      width: 100%;
+      padding: 5px;
+      border-radius: var(--corners);
+      border: 1px solid var(--secondary-color);
+      font-size: 1.2em;
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+}
