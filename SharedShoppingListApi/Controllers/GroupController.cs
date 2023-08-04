@@ -65,6 +65,9 @@ namespace SharedShoppingListApi.Controllers
 
             Models.Group newGroup = new Models.Group();
 
+            newGroup.Name = createGroupDto.Name;
+            newGroup.Description = createGroupDto.Description;
+
             _mainDbContext.Groups.Add(newGroup);
             await _mainDbContext.SaveChangesAsync();
 
@@ -144,6 +147,40 @@ namespace SharedShoppingListApi.Controllers
             serviceResponse.Success = true;
             serviceResponse.Message = $"Success";
             serviceResponse.Data = groupFromDb;
+
+            return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
+        }
+
+        [HttpPost("leave_group")]
+        public async Task<ActionResult<ServiceResponse>> LeaveGroup(JoinGroupDto joinGroupDto)
+        {
+            var serviceResponse = new ServiceResponse();
+
+            var groupFromDb = await _mainDbContext.Groups.Where(x => x.Id == joinGroupDto.GroupId).FirstOrDefaultAsync();
+
+            if (groupFromDb == null)
+            {
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = "Group not found";
+                return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
+            }
+
+            var user = await _mainDbContext.Users.Where(x => x.UniqueId == joinGroupDto.UniqueUserId).FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = "User not found";
+                return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
+            }
+
+            groupFromDb.Members.Add(user);
+            _mainDbContext.Groups.Update(groupFromDb);
+            await _mainDbContext.SaveChangesAsync();
+
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Success = true;
+            serviceResponse.Message = $"Successfully joined the group: {groupFromDb.Name}";
 
             return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
         }
