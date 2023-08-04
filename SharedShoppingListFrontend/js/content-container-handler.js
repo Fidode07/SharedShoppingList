@@ -17,6 +17,14 @@ function changeContainer(targetContainer) {
 function initContainerData() {
     containers = document.getElementsByClassName('content-container');
     activeContainer = getActiveContainer(containers);
+
+    if (localStorage.getItem("userId") !== null) {
+        userId = localStorage.getItem("userId");
+        initGroups();
+        changeContainer("group-list");
+    } else {
+        changeContainer("login");
+    }
 }
 
 // Init data when DOM is loaded

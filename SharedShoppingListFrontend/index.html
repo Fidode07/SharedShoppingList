@@ -8,13 +8,23 @@
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/form-styles.css">
+    <!-- Font Awesome -->
+    <link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+          integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+          referrerpolicy="no-referrer" rel="stylesheet"/>
 </head>
 <body>
+<script>
+    let userId, clickedGroupId;
+</script>
 <img src="img/shopping-venture.jpg" class="bg-image" alt="Shopping Venture Background Image"/>
 <header class="main-header">
     <h1 class="title"><span>S</span><span>S</span><span>L</span> - That's shopping!</h1>
 </header>
 <main>
+    <div id="alert-box">
+    </div>
     <section class="content-container active" id="login-container">
         <div class="container">
             <div class="row">
@@ -58,7 +68,8 @@
                             </div>
                             <div class="form-input-field">
                                 <label for="rp-password2">Repeat password:</label>
-                                <input type="password" id="rp-password2" name="password" placeholder="Repeat your password">
+                                <input type="password" id="rp-password2" name="password"
+                                       placeholder="Repeat your password">
                             </div>
                             <p>Already have an Account? <a href="#" onclick="changeContainer('login')">Login</a>!</p>
 
@@ -75,14 +86,17 @@
         <div class="container">
             <div class="row">
                 <h1 class="group-heading">Your Groups:</h1>
-                <div class="col-lg-12 group-card-container">
-                    <div class="group-card" onclick="groupClick(2);">
-                        <h1 class="title">Toms Familie (3)</h1>
+                <div id="group-list">
+                    <div class="col-lg-12 group-card-container">
+                        <div class="group-card" onclick="groupClick(2);">
+                            <h1 class="title">Toms Familie (3)</h1>
+                        </div>
                     </div>
+
                 </div>
                 <div class="col-lg-12 group-card-container">
-                    <div class="group-card">
-                        <h1 class="title">Fidos Familie (12)</h1>
+                    <div class="group-card create" data-bs-toggle="modal" data-bs-target="#createGroupModal">
+                        <h1 class="title"><i class="fa-solid fa-circle-plus"></i></h1>
                     </div>
                 </div>
             </div>
@@ -145,6 +159,36 @@
         </div>
     </section>
 </main>
+
+<!-- Modal -->
+<div class="modal fade" id="createGroupModal" tabindex="-1" aria-labelledby="createGroupModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createGroupModalLabel">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form" style="margin-top: 0 !important;">
+                    <div class="form-input-field">
+                        <label for="group-name">Group name:</label>
+                        <input type="text" id="group-name" name="group-name" placeholder="Group name">
+                    </div>
+                    <div class="form-input-field">
+                        <label for="group-description">Group description (optional):</label>
+                        <input type="text" id="group-description" name="group-description"
+                               placeholder="Group description">
+                    </div>
+                    <div class="form-input-field">
+                        <input type="submit" value="Create" onclick="tryCreateGroup()" class="login-btn">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <br><br>
 <!-- Bootstrap JS -->
 <script src="js/bootstrap/bootstrap.min.js" async></script>
