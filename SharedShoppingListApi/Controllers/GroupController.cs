@@ -18,11 +18,11 @@ namespace SharedShoppingListApi.Controllers
             _mainDbContext = mainDbContext;
         }
         [HttpGet("get_groups")]
-        public async Task<ActionResult<ServiceResponse<List<GroupsDto>>>> GetGroups(GetGroupsDto getGroupsDto)
+        public async Task<ActionResult<ServiceResponse<List<GroupsDto>>>> GetGroups(string uniqueUserId)
         {
             var serviceResponse = new ServiceResponse<List<GroupsDto>>();
 
-            if(string.IsNullOrEmpty(getGroupsDto.UniqueUserId))
+            if(string.IsNullOrEmpty(uniqueUserId))
             {
                 serviceResponse.StatusCode = 400;
                 serviceResponse.Message = "User Id is required";
@@ -31,7 +31,7 @@ namespace SharedShoppingListApi.Controllers
             
             List<GroupsDto> groupsDto = new List<GroupsDto>();
 
-            var groupsFromUser = _mainDbContext.Groups.Where(group => group.Members.Any(member => member.UniqueId == getGroupsDto.UniqueUserId));
+            var groupsFromUser = _mainDbContext.Groups.Where(group => group.Members.Any(member => member.UniqueId == uniqueUserId));
 
             foreach (var group in groupsFromUser)
             {
