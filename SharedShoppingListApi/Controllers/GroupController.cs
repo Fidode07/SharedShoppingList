@@ -32,7 +32,7 @@ namespace SharedShoppingListApi.Controllers
             
             List<GroupsDto> groupsDto = new List<GroupsDto>();
 
-            var groupsFromUser = _mainDbContext.Groups.Where(group => group.Members.Any(member => member.UniqueId == uniqueUserId));
+            var groupsFromUser = await _mainDbContext.Groups.Where(group => group.Members.Any(member => member.UniqueId == uniqueUserId)).ToListAsync();
 
             foreach (var group in groupsFromUser)
             {
