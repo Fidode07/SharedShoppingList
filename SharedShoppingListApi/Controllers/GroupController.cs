@@ -55,10 +55,10 @@ namespace SharedShoppingListApi.Controllers
         {
             var serviceResponse = new ServiceResponse<int>();
 
-            if (string.IsNullOrEmpty(createGroupDto.Name) || string.IsNullOrEmpty(createGroupDto.Description))
+            if (string.IsNullOrEmpty(createGroupDto.Name))
             {
                 serviceResponse.StatusCode = 400;
-                serviceResponse.Message = "Group props are empty";
+                serviceResponse.Message = "The group must have a name";
                 return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
             }
 
