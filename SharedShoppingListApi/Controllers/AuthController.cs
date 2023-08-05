@@ -20,28 +20,37 @@ namespace SharedShoppingListApi.Controllers
         public async Task<ActionResult<ServiceResponse<string>>> Login(LoginDto loginDto)
         {
             var serviceResponse = new ServiceResponse<string>();
-            var user = await _mainDbContext.Users.FirstOrDefaultAsync(u => u.Username.ToLower() == loginDto.Username.ToLower());
-
-            if(user == null)
+            try
             {
-                serviceResponse.StatusCode = 404;
-                serviceResponse.Message = "User not found";
+                var user = await _mainDbContext.Users.FirstOrDefaultAsync(u => u.Username.ToLower() == loginDto.Username.ToLower());
+
+                if (user == null)
+                {
+                    serviceResponse.StatusCode = 404;
+                    serviceResponse.Message = "User not found";
+                    return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
+                }
+
+                if (!BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
+                {
+                    serviceResponse.StatusCode = 401;
+                    serviceResponse.Message = "Password is incorrect";
+                    return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
+                }
+
+                serviceResponse.Data = user.UniqueId;
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Success = true;
+                serviceResponse.Message = "Successfully logged in";
+
                 return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
             }
-
-            if(!BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
+            catch
             {
-                serviceResponse.StatusCode = 401;
-                serviceResponse.Message = "Password is incorrect";
-                return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = $"Try again later";
+                return StatusCode(serviceResponse.StatusCode, serviceResponse);
             }
-
-            serviceResponse.Data = user.UniqueId;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Success = true;
-            serviceResponse.Message = "Successfully logged in";
-
-            return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
         }
 
         [HttpPost("register")]
@@ -49,29 +58,38 @@ namespace SharedShoppingListApi.Controllers
         {
             var serviceResponse = new ServiceResponse<string>();
 
-            if(await _mainDbContext.Users.AnyAsync(u => u.Username.ToLower() == registerDto.Username.ToLower()))
+            try
             {
-                serviceResponse.StatusCode = 400;
-                serviceResponse.Message = "Username already exists";
+                if (await _mainDbContext.Users.AnyAsync(u => u.Username.ToLower() == registerDto.Username.ToLower()))
+                {
+                    serviceResponse.StatusCode = 400;
+                    serviceResponse.Message = "Username already exists";
+                    return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
+                }
+
+                var newUser = new User
+                {
+                    Username = registerDto.Username,
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password),
+                    UniqueId = Guid.NewGuid().ToString("N").Substring(0, 20)
+                };
+
+                _mainDbContext.Users.Add(newUser);
+                await _mainDbContext.SaveChangesAsync();
+
+                serviceResponse.Data = newUser.UniqueId;
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Success = true;
+                serviceResponse.Message = "Successfully registered";
+
                 return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
             }
-
-            var newUser = new User
+            catch
             {
-                Username = registerDto.Username,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password),
-                UniqueId = Guid.NewGuid().ToString("N").Substring(0, 20)
-            };
-
-            _mainDbContext.Users.Add(newUser);
-            await _mainDbContext.SaveChangesAsync();
-
-            serviceResponse.Data = newUser.UniqueId;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Success = true;
-            serviceResponse.Message = "Successfully registered";
-
-            return await Task.FromResult(StatusCode(serviceResponse.StatusCode, serviceResponse));
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = $"Try again later";
+                return StatusCode(serviceResponse.StatusCode, serviceResponse);
+            }
         }
     }
 }
