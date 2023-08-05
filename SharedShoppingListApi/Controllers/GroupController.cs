@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SharedShoppingListApi.Data;
 using SharedShoppingListApi.Dtos;
-using System.Text.Json.Serialization;
-using System.Text.Json;
 
 namespace SharedShoppingListApi.Controllers
 {
@@ -217,6 +214,65 @@ namespace SharedShoppingListApi.Controllers
                 serviceResponse.Success = true;
                 serviceResponse.Message = "Success";
                 serviceResponse.Data = groupDto;
+
+                return StatusCode(serviceResponse.StatusCode, serviceResponse);
+            }
+            catch
+            {
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = $"Try again later";
+                return StatusCode(serviceResponse.StatusCode, serviceResponse);
+            }
+        }
+
+        [HttpPost("update-shoppinglist")]
+        public async Task<ActionResult<ServiceResponse>> UpdateShoppingList(UpdateShoppingListDto updateShoppingListDto)
+        {
+            var serviceResponse = new ServiceResponse();
+
+            try
+            {
+                var groupFromDb = await _mainDbContext.Groups
+                        .Include(g => g.Members)
+                        .FirstOrDefaultAsync(g => g.Id == updateShoppingListDto.GroupId);
+
+                if (groupFromDb == null)
+                {
+                    serviceResponse.StatusCode = 404;
+                    serviceResponse.Message = "Group not found";
+                    return StatusCode(serviceResponse.StatusCode, serviceResponse);
+                }
+
+                var user = await _mainDbContext.Users.FirstOrDefaultAsync(u => u.UniqueId == updateShoppingListDto.UniqueUserId);
+
+                if (user == null)
+                {
+                    serviceResponse.StatusCode = 404;
+                    serviceResponse.Message = "User not found";
+                    return StatusCode(serviceResponse.StatusCode, serviceResponse);
+                }
+
+                if (!groupFromDb.Members.Any(ug => ug.UniqueId == updateShoppingListDto.UniqueUserId))
+                {
+                    serviceResponse.StatusCode = 401;
+                    serviceResponse.Message = "You are not in this group";
+                    return StatusCode(serviceResponse.StatusCode, serviceResponse);
+                }
+                if(string.IsNullOrEmpty(updateShoppingListDto.NewShoppingList))
+                {
+                    serviceResponse.StatusCode = 401;
+                    serviceResponse.Message = "Shoppinglist is empty";
+                    return StatusCode(serviceResponse.StatusCode, serviceResponse);
+                }
+
+                groupFromDb.ShoppingList = updateShoppingListDto.NewShoppingList;
+
+                _mainDbContext.Update(groupFromDb);
+                await _mainDbContext.SaveChangesAsync();
+
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Success = true;
+                serviceResponse.Message = "Success";
 
                 return StatusCode(serviceResponse.StatusCode, serviceResponse);
             }
