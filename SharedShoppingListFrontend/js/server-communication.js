@@ -106,11 +106,9 @@ function tryRegister() {
 }
 
 function initGroups() {
-    const options = buildOptions({
-        "uniqueUserId": userId
-    }, 'GET');
+    const options = buildOptions(null, 'GET');
 
-    fetch(api_url + `/Group/get_groups?getGroupsDto={"uniqueUserId":%20"7dbae4bd565c422b9cc2"}`, options)
+    fetch(api_url + `/Group/get_groups?uniqueUserId=${userId}`, options)
         .then(response => {
             return response.json();
         }).then(data => {
@@ -130,7 +128,31 @@ function initGroups() {
 
 function groupClick(groupId) {
     changeContainer('shopping-list-editor');
-    // TODO: Fetch Shopping List and members of group [INSERT INTO DIVS]
+    // TODO: Fetch group data
+    const options = buildOptions(null, 'GET');
+    fetch(api_url + `/Group/get_group?groupId=${groupId}&uniqueUserId=${userId}`, options).then(response => {
+        return response.json();
+    }).then(data => {
+        if (!data.Success) {
+            setAlertBox(generate_bootstrap_error('Error!', data.message));
+            return;
+        }
+        setAlertBox('');
+
+        let shoppingListStr = data.Data.ShoppingList;
+        let members = data.Data.Members.$values;
+        let membersContainer = document.getElementById('group-member-list');
+
+        // Put shopping list into shopping list editor
+        let shoppingListEditor = document.getElementById('shopping-list-editor');
+        shoppingListEditor.value = shoppingListStr;
+
+        // Put members into member list
+        membersContainer.innerHTML = '';
+        members.forEach(member => {
+            membersContainer.innerHTML += new User(member.User.Username).getHtml();
+        });
+    });
 }
 
 function setAlertBox(text) {
@@ -151,10 +173,25 @@ function tryCreateGroup() {
         setAlertBox(generate_bootstrap_error('Error!', 'Group name is empty!'));
         return;
     }
+    let description = document.getElementById('group-description').value;
 
     let options = buildOptions({
-        "userId": userId,
-        "groupName": groupName
+        "name": groupName,
+        "description": description,
+        "uniqueUserId": userId
+    });
+
+    fetch(api_url + '/Group/create_group', options)
+        .then(response => {
+            return response.json();
+        }).then(data => {
+        if (!data.success) {
+            setAlertBox(generate_bootstrap_error('Error!', data.message));
+            return;
+        }
+        setAlertBox('');
+        initGroups();
+        changeContainer('group-list');
     });
 }
 
@@ -170,5 +207,19 @@ class Group {
                         <h1 class="title">${this.name}</h1>
                     </div>
                 </div>`;
+    }
+}
+
+class User {
+    constructor(name) {
+        this.name = name;
+    }
+
+    getHtml() {
+        return `<div class="col-lg-12 group-card-container">
+                <div class="group-card">
+                    <h1 class="title">${this.name}</h1>
+                </div>
+            </div>`;
     }
 }

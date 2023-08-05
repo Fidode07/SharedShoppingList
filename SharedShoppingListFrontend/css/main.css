@@ -1,0 +1,143 @@
+:root {
+  --primary-color: #ff6f00;
+  --secondary-color: #217DE5;
+  --corners: 5px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 !important;
+}
+
+.main-header {
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #0e0e0e;
+  color: white;
+  padding: 15px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+.main-header .title {
+  font-size: 1.6em;
+}
+.main-header .title span:nth-child(1) {
+  color: var(--primary-color);
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+body {
+  /*background: #202020;*/
+  color: white;
+}
+body #createGroupModal {
+  color: black !important;
+}
+body .bg-image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  filter: blur(5px) brightness(0.7);
+  z-index: -1;
+  object-fit: cover;
+  transform: scale(1.1);
+}
+body main {
+  margin-top: 20px;
+}
+body main #alert-box {
+  width: 80%;
+  margin: 0 auto;
+  /* on mobile 95% */
+}
+@media only screen and (max-width: 600px) {
+  body main #alert-box {
+    width: 95%;
+  }
+}
+body main .content-container {
+  display: none;
+  transition: all 0.3s ease-in-out;
+  /* Group Container Stuff */
+  /* Login/Register Container Stuff */
+  /* Shopping List Container Stuff */
+}
+body main .content-container.active {
+  display: block;
+}
+body main .content-container .group-heading {
+  padding: 10px 10px 20px 10px;
+}
+body main .content-container #group-list {
+  margin-bottom: 20px;
+}
+body main .content-container .group-card-container .group-card {
+  border-radius: var(--corners);
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+  margin: 0 auto;
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+  padding: 10px;
+  background: var(--secondary-color);
+}
+body main .content-container .group-card-container .group-card.create {
+  background: #3d3d3d;
+}
+body main .content-container .group-card-container .group-card:hover {
+  cursor: pointer;
+  transform: scale(1.01);
+}
+body main .content-container .group-card-container + .group-card-container {
+  margin-top: 20px;
+}
+body main .content-container .login-container {
+  color: black;
+  position: absolute;
+  text-align: center;
+  padding: 10px 20px 20px 20px;
+  transform: translateY(-50%);
+  top: 50%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 90%;
+  backdrop-filter: blur(3px);
+  border-radius: var(--corners);
+  background: white;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+}
+body main .content-container .login-container .heading {
+  font-size: 1.9em;
+  padding: 10px;
+  border-bottom: 1px solid var(--secondary-color);
+}
+@media only screen and (min-width: 1100px) {
+  body main .content-container .login-container {
+    width: 50%;
+  }
+}
+@media only screen and (min-width: 1600px) {
+  body main .content-container .login-container {
+    width: 22%;
+  }
+}
+body main .content-container .shopping-list-editor-container {
+  width: 100%;
+  height: 70vh;
+  margin: 0 auto;
+  text-align: center;
+}
+body main .content-container .shopping-list-editor-container .shopping-list-editor {
+  width: 90%;
+  height: 100%;
+  border: 1px solid var(--secondary-color);
+  font-size: 22px;
+}
+body main .content-container .shopping-list-editor-container .shopping-list-editor:focus {
+  outline: none;
+  border: 2px solid var(--secondary-color);
+}
+
+/*# sourceMappingURL=main.css.map */
