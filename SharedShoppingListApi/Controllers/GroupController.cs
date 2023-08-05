@@ -5,6 +5,8 @@ using SharedShoppingListApi.Data;
 using SharedShoppingListApi.Dtos;
 using SharedShoppingListApi.Models;
 using SharedShoppingListApi.Models.Submodels;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace SharedShoppingListApi.Controllers
@@ -148,6 +150,7 @@ namespace SharedShoppingListApi.Controllers
 
             var groupFromDb = await _mainDbContext.Groups
                 .Include(g => g.Members)
+                .ThenInclude(ug => ug.User)  // Include the User in Members
                 .FirstOrDefaultAsync(g => g.Id == groupId);
 
             if (groupFromDb == null)
@@ -173,13 +176,20 @@ namespace SharedShoppingListApi.Controllers
                 return StatusCode(serviceResponse.StatusCode, serviceResponse);
             }
 
+            var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve, // Use ReferenceHandler.Preserve to handle object cycles
+                WriteIndented = true // Optional: Format JSON for better readability
+            };
+
             serviceResponse.StatusCode = 200;
             serviceResponse.Success = true;
             serviceResponse.Message = "Success";
             serviceResponse.Data = groupFromDb;
 
-            return StatusCode(serviceResponse.StatusCode, serviceResponse);
+            return Content(JsonSerializer.Serialize(serviceResponse, options), "application/json");
         }
+
 
         [HttpPost("leave_group")]
         public async Task<ActionResult<ServiceResponse>> LeaveGroup(LeaveGroupDto leaveGroupDto)
