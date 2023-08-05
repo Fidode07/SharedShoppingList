@@ -61,7 +61,7 @@ namespace SharedShoppingListApi.Controllers
                 Username = registerDto.Username,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password),
                 UniqueId = Guid.NewGuid().ToString("N").Substring(0, 20)
-        };
+            };
 
             _mainDbContext.Users.Add(newUser);
             await _mainDbContext.SaveChangesAsync();

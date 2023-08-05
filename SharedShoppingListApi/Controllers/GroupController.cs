@@ -171,20 +171,26 @@ namespace SharedShoppingListApi.Controllers
                 return StatusCode(serviceResponse.StatusCode, serviceResponse);
             }
 
-            var options = new JsonSerializerOptions
+            GroupDto groupDto = new GroupDto();
+            groupDto.Description = groupFromDb.Description;
+            groupDto.Name = groupFromDb.Name;
+            groupDto.ShoppingList = groupFromDb.ShoppingList;
+
+            foreach (var member in groupFromDb.Members)
             {
-                ReferenceHandler = ReferenceHandler.Preserve, // Use ReferenceHandler.Preserve to handle object cycles
-                WriteIndented = true // Optional: Format JSON for better readability
-            };
+                groupDto.Members.Add(new GroupMemberDto
+                {
+                    Username = member.Username
+                });
+            }
+
 
             serviceResponse.StatusCode = 200;
             serviceResponse.Success = true;
             serviceResponse.Message = "Success";
-            serviceResponse.Data = groupFromDb;
+            serviceResponse.Data = groupDto;
 
-
-
-            return Content(JsonSerializer.Serialize(serviceResponse, options), "application/json");
+            return StatusCode(serviceResponse.StatusCode, serviceResponse);
         }
 
 
