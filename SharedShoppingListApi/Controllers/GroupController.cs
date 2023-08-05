@@ -3,11 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SharedShoppingListApi.Data;
 using SharedShoppingListApi.Dtos;
-using SharedShoppingListApi.Models;
 using SharedShoppingListApi.Models.Submodels;
 using System.Text.Json.Serialization;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 
 namespace SharedShoppingListApi.Controllers
 {
@@ -187,7 +185,7 @@ namespace SharedShoppingListApi.Controllers
             serviceResponse.Message = "Success";
             serviceResponse.Data = groupFromDb;
 
-            return Content(JsonSerializer.Serialize(serviceResponse, options), "application/json");
+            return StatusCode(serviceResponse.StatusCode, serviceResponse);
         }
 
 
