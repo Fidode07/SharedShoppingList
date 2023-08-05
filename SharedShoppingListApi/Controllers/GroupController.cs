@@ -140,9 +140,9 @@ namespace SharedShoppingListApi.Controllers
         }
 
         [HttpGet("get_group")]
-        public async Task<ActionResult<ServiceResponse<Models.Group>>> GetGroup(int groupId, string uniqueUserId)
+        public async Task<ActionResult<ServiceResponse<GroupDto>>> GetGroup(int groupId, string uniqueUserId)
         {
-            var serviceResponse = new ServiceResponse<Models.Group>();
+            var serviceResponse = new ServiceResponse<GroupDto>();
 
             var groupFromDb = await _mainDbContext.Groups
                 .Include(g => g.Members)
