@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SharedShoppingListApi.Data;
 using SharedShoppingListApi.Dtos;
-using SharedShoppingListApi.Models.Submodels;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 
@@ -33,8 +32,7 @@ namespace SharedShoppingListApi.Controllers
             }
 
             var user = await _mainDbContext.Users
-                .Include(u => u.Groups)  // Include user's groups
-                .ThenInclude(ug => ug.Group)
+                .Include(u => u.Groups)
                 .FirstOrDefaultAsync(u => u.UniqueId == uniqueUserId);
 
             if (user == null)
@@ -46,9 +44,9 @@ namespace SharedShoppingListApi.Controllers
 
             List<GroupsDto> groupsDto = user.Groups.Select(ug => new GroupsDto
             {
-                Id = ug.Group.Id,
-                Name = ug.Group.Name,
-                Description = ug.Group.Description
+                Id = ug.Id,
+                Name = ug.Name,
+                Description = ug.Description
             }).ToList();
 
             serviceResponse.StatusCode = 200;
@@ -86,7 +84,7 @@ namespace SharedShoppingListApi.Controllers
                 Description = createGroupDto.Description
             };
 
-            newGroup.Members.Add(new UserGroup { User = user });
+            newGroup.Members.Add( user );
 
             _mainDbContext.Groups.Add(newGroup);
             await _mainDbContext.SaveChangesAsync();
@@ -123,14 +121,14 @@ namespace SharedShoppingListApi.Controllers
                 return StatusCode(serviceResponse.StatusCode, serviceResponse);
             }
 
-            if (groupFromDb.Members.Any(ug => ug.User.UniqueId == joinGroupDto.UniqueUserId))
+            if (groupFromDb.Members.Any(ug => ug.UniqueId == joinGroupDto.UniqueUserId))
             {
                 serviceResponse.StatusCode = 400;
                 serviceResponse.Message = "User is already a member of this group";
                 return StatusCode(serviceResponse.StatusCode, serviceResponse);
             }
 
-            groupFromDb.Members.Add(new UserGroup { User = user });
+            groupFromDb.Members.Add( user );
 
             await _mainDbContext.SaveChangesAsync();
 
@@ -148,7 +146,6 @@ namespace SharedShoppingListApi.Controllers
 
             var groupFromDb = await _mainDbContext.Groups
                 .Include(g => g.Members)
-                .ThenInclude(ug => ug.User)  // Include the User in Members
                 .FirstOrDefaultAsync(g => g.Id == groupId);
 
             if (groupFromDb == null)
@@ -167,7 +164,7 @@ namespace SharedShoppingListApi.Controllers
                 return StatusCode(serviceResponse.StatusCode, serviceResponse);
             }
 
-            if (!groupFromDb.Members.Any(ug => ug.User.UniqueId == uniqueUserId))
+            if (!groupFromDb.Members.Any(ug => ug.UniqueId == uniqueUserId))
             {
                 serviceResponse.StatusCode = 401;
                 serviceResponse.Message = "You are not in this group";
@@ -185,7 +182,9 @@ namespace SharedShoppingListApi.Controllers
             serviceResponse.Message = "Success";
             serviceResponse.Data = groupFromDb;
 
-            return StatusCode(serviceResponse.StatusCode, serviceResponse);
+
+
+            return Content(JsonSerializer.Serialize(serviceResponse, options), "application/json");
         }
 
 
@@ -214,7 +213,7 @@ namespace SharedShoppingListApi.Controllers
                 return StatusCode(serviceResponse.StatusCode, serviceResponse);
             }
 
-            var userGroup = groupFromDb.Members.FirstOrDefault(ug => ug.User.UniqueId == leaveGroupDto.UniqueUserId);
+            var userGroup = groupFromDb.Members.FirstOrDefault(ug => ug.UniqueId == leaveGroupDto.UniqueUserId);
 
             if (userGroup == null)
             {
@@ -233,6 +232,5 @@ namespace SharedShoppingListApi.Controllers
 
             return StatusCode(serviceResponse.StatusCode, serviceResponse);
         }
-
     }
 }
